@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'picker.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -30,12 +32,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
   void _clear() {
-    setState(() {
-      // TODO clear all data.
-    });
+    setState(() {});
   }
 
   @override
@@ -55,12 +53,13 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       child: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
               padding: EdgeInsets.all(10),
               color: Color.fromRGBO(54, 69, 79, 1),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                //crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "Premium",
@@ -73,9 +72,33 @@ class _MyHomePageState extends State<MyHomePage> {
                     "0",
                     style: Theme.of(context)
                         .textTheme
-                        .headline3
+                        .headline4
                         .copyWith(color: Colors.white),
                   ),
+                ],
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Picker(
+                    title: "Gender",
+                    description: "Male or Female?",
+                    options: ["Male", "Female"],
+                  ),
+                  Picker(
+                    title: "Plan Type",
+                    description: "Which plan type?",
+                    options: ["Final Expense", "20 Pay", "Modified"],
+                  ),
+                  Picker(
+                    title: "Smoking",
+                    description: "Smoking?",
+                    options: ["No", "Non-Tobacco", "Tobacco"],
+                    showFirstOptionPlaceholder: true,
+                  )
                 ],
               ),
             ),
