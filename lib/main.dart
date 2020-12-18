@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'number_picker.dart';
 import 'picker.dart';
 
 void main() {
@@ -32,13 +33,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  var planPickerController = PickerController(); // TODO use this.
+
   void _clear() {
-    setState(() {});
+    setState(() {
+      Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
+      resizeToAvoidBottomInset: false, // For overflow from keyboard
       navigationBar: CupertinoNavigationBar(
         middle: Text(widget.title),
         trailing: Row(
@@ -79,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Container(
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.all(5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -92,13 +98,57 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "Plan Type",
                     description: "Which plan type?",
                     options: ["Final Expense", "20 Pay", "Modified"],
+                    controller: planPickerController,
                   ),
                   Picker(
                     title: "Smoking",
                     description: "Smoking?",
                     options: ["No", "Non-Tobacco", "Tobacco"],
                     showFirstOptionPlaceholder: true,
-                  )
+                  ),
+                  NumberPicker(
+                    title: "Coverage amount",
+                    increment: 1000,
+                    maxValue:
+                        /*planPickerController != null &&
+                            planPickerController.selection != null &&
+                            planPickerController.selection == "Modified"
+                        ? 15000
+                        : */
+                        35000,
+                    conditional: Conditional(
+                      // BUG the max doesn't change to the alternative max automatically after plantype is changed.
+                      planPickingController: planPickerController,
+                      plan: "Modified",
+                      alternativeMax: 15000,
+                    ),
+                    monetary: true,
+                  ),
+                  NumberPicker(
+                    title: "Age",
+                    increment: 10,
+                    maxValue: 85,
+                    conditional: Conditional(
+                      planPickingController: planPickerController,
+                      plan: "20 Pay",
+                      alternativeMax: 80,
+                    ),
+                  ),
+                  NumberPicker(
+                    title: "AD&D Rider", // TODO units
+                    increment: 1,
+                    maxValue: 8,
+                  ),
+                  NumberPicker(
+                    title: "Child Unit Rider Units", //TODO units
+                    increment: 1,
+                    maxValue: 5,
+                  ),
+                  NumberPicker(
+                    title: "Number of Children",
+                    increment: 1,
+                    maxValue: 8,
+                  ),
                 ],
               ),
             ),
