@@ -8,22 +8,18 @@ class Picker extends StatefulWidget {
   final String description;
   final List<String> options;
   final bool showFirstOptionPlaceholder;
-  final PickerController controller;
+  final Function(String selected) onSelected;
 
   const Picker({
     @required this.title,
     @required this.description,
     @required this.options,
+    @required this.onSelected,
     this.showFirstOptionPlaceholder = false,
-    this.controller,
   });
 
   @override
   _State createState() => _State();
-}
-
-class PickerController {
-  String selection;
 }
 
 class _State extends State<Picker> {
@@ -43,6 +39,8 @@ class _State extends State<Picker> {
             setState(() {
               _result = optionName;
             });
+            widget.onSelected(optionName);
+
             Navigator.pop(context);
           },
         ),
@@ -83,13 +81,7 @@ class _State extends State<Picker> {
                 title: Text(widget.description),
                 actions: _actions,
               ),
-            ).whenComplete(() {
-              if (widget.controller != null) {
-                setState(() {
-                  widget.controller.selection = _result;
-                });
-              }
-            });
+            );
           },
         ),
       ),

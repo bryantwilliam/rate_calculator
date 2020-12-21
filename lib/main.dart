@@ -32,8 +32,57 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+enum PlanType {
+  finalExpense,
+  twentyPay,
+  modified,
+}
+
+extension PlanTypeExtension on PlanType {
+  String get text {
+    switch (this) {
+      case PlanType.finalExpense:
+        return "Final Expense";
+      case PlanType.twentyPay:
+        return "20 Pay";
+      case PlanType.modified:
+        return "Modified";
+      default:
+        return "Undefined";
+    }
+  }
+}
+
 class _MyHomePageState extends State<MyHomePage> {
-  var planPickerController = PickerController(); // TODO use this.
+  String _planType = "";
+  double _coverageAmount = 0;
+  int _childRiderUnits = 0;
+  int _adNdRiderUnits = 0;
+  int _numChildren = 0;
+  int _age = 0;
+
+  double get _premium {
+    double pac = 1; // TODO get pac
+
+    bool is20Pay = _planType == PlanType.twentyPay.text;
+
+    double adNdRider;
+    if (_age <= 70) {
+      adNdRider = is20Pay ? 1.5 : 1;
+    } else if (_age <= 75) {
+      adNdRider = is20Pay ? 2 : 1.5;
+    } else if (_age <= 80) {
+      adNdRider = is20Pay ? 2.5 : 2;
+    } else {
+      adNdRider = 2.25; // Can't go over 80 with 20Pay so no need to check.
+    }
+    adNdRider *= _adNdRiderUnits;
+
+    double childRider =
+        (is20Pay ? 2.25 : 2.0) * _childRiderUnits * _numChildren;
+
+    return (pac * (_coverageAmount / 1000)) + adNdRider + childRider + 3;
+  }
 
   void _clear() {
     setState(() {
@@ -75,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         .copyWith(color: Colors.white),
                   ),
                   Text(
-                    "0",
+                    _premium.toString(), // TODO currency format
                     style: Theme.of(context)
                         .textTheme
                         .headline4
@@ -93,61 +142,76 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "Gender",
                     description: "Male or Female?",
                     options: ["Male", "Female"],
+                    onSelected: (String selected) {},
                   ),
                   Picker(
                     title: "Plan Type",
                     description: "Which plan type?",
-                    options: ["Final Expense", "20 Pay", "Modified"],
-                    controller: planPickerController,
+                    options: PlanType.values.map((e) => e.text).toList(),
+                    onSelected: (String selected) {
+                      setState(() {
+                        _planType = selected;
+                      });
+                    },
                   ),
                   Picker(
                     title: "Smoking",
                     description: "Smoking?",
                     options: ["No", "Non-Tobacco", "Tobacco"],
                     showFirstOptionPlaceholder: true,
+                    onSelected: (String selected) {},
+                  ),
+                  NumberPicker(
+                    title: "Age",
+                    increment: 10,
+                    maxValue: _planType == PlanType.twentyPay.text ? 80 : 85,
+                    onChanged: (double value) {
+                      setState(() {
+                        _age = value.toInt();
+                      });
+                    },
                   ),
                   NumberPicker(
                     title: "Coverage amount",
                     increment: 1000,
                     maxValue:
-                        /*planPickerController != null &&
-                            planPickerController.selection != null &&
-                            planPickerController.selection == "Modified"
-                        ? 15000
-                        : */
-                        35000,
-                    conditional: Conditional(
-                      // BUG the max doesn't change to the alternative max automatically after plantype is changed.
-                      planPickingController: planPickerController,
-                      plan: "Modified",
-                      alternativeMax: 15000,
-                    ),
+                        _planType == PlanType.modified.text ? 15000 : 35000,
                     monetary: true,
+                    onChanged: (double value) {
+                      setState(() {
+                        _coverageAmount = value;
+                      });
+                    },
                   ),
                   NumberPicker(
-                    title: "Age",
-                    increment: 10,
-                    maxValue: 85,
-                    conditional: Conditional(
-                      planPickingController: planPickerController,
-                      plan: "20 Pay",
-                      alternativeMax: 80,
-                    ),
-                  ),
-                  NumberPicker(
-                    title: "AD&D Rider", // TODO units
+                    title: "AD&D Rider", // TODO units format
                     increment: 1,
                     maxValue: 8,
+                    onChanged: (double value) {
+                      setState(() {
+                        _adNdRiderUnits = value.toInt();
+                      });
+                    },
                   ),
                   NumberPicker(
-                    title: "Child Unit Rider Units", //TODO units
+                    title: "Child Unit Rider Units", //TODO units format
                     increment: 1,
                     maxValue: 5,
+                    onChanged: (double value) {
+                      setState(() {
+                        _childRiderUnits = value.toInt();
+                      });
+                    },
                   ),
                   NumberPicker(
                     title: "Number of Children",
                     increment: 1,
                     maxValue: 8,
+                    onChanged: (double value) {
+                      setState(() {
+                        _numChildren = value.toInt();
+                      });
+                    },
                   ),
                 ],
               ),

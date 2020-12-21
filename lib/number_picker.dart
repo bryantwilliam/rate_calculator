@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:rate_calculator/picker.dart';
 
 import 'card_item.dart';
 
@@ -9,73 +8,57 @@ class NumberPicker extends StatefulWidget {
   final int maxValue;
   final String title;
   final bool monetary;
-  final Conditional conditional;
+  final Function(double value) onChanged;
+  final int initialValue;
 
-  const NumberPicker({
-    @required this.increment,
-    @required this.title,
-    @required this.maxValue,
-    this.monetary = false,
-    this.conditional,
-  });
+  const NumberPicker(
+      {@required this.increment,
+      @required this.title,
+      @required this.maxValue,
+      @required this.onChanged,
+      this.monetary = false,
+      this.initialValue = 0});
 
   @override
   _NumberPickerState createState() => _NumberPickerState();
-}
-
-class Conditional {
-  final String plan;
-  final int alternativeMax;
-  final PickerController planPickingController;
-
-  Conditional({
-    @required this.planPickingController,
-    @required this.plan,
-    @required this.alternativeMax,
-  });
 }
 
 class _NumberPickerState extends State<NumberPicker> {
   final _amountController = TextEditingController();
   final _formatCurrency = NumberFormat.simpleCurrency();
 
-  void _setValue(num newValue) {
+  void _setValue(double newValue) {
     if (newValue < 0) {
       newValue = 0;
     } else {
-      var max = widget.maxValue;
-
-      // BUG this doesn't run automatically after plantype is changed.
-      var conditional = widget.conditional;
-      if (conditional != null) {
-        var planPickingController = conditional.planPickingController;
-        if (planPickingController != null) {
-          var conditionalPlan = conditional.planPickingController.selection;
-          if (conditionalPlan == conditional.plan) {
-            max = conditional.alternativeMax;
-          }
-        }
-      }
+      double max = widget.maxValue.toDouble();
 
       if (newValue >= max) {
         newValue = max;
       }
     }
 
+    widget.onChanged(newValue.toDouble());
+
     _amountController.text = widget.monetary
         ? _formatCurrency.format(newValue)
-        : newValue.toString();
+        : newValue.toInt().toString();
   }
 
-  num parseCurrentValue() {
-    return widget.monetary
-        ? _formatCurrency.parse(_amountController.text)
-        : double.parse(_amountController.text).toInt();
+  double _parseCurrentValue() {
+    if (widget.monetary) {
+      try {
+        return _formatCurrency.parse(_amountController.text);
+      } on FormatException catch (_) {
+        return _formatCurrency.parse("0");
+      }
+    }
+    return double.tryParse(_amountController.text) ?? 0;
   }
 
   // add true: add
   // add false: subtract
-  void _increment(int increment) {
+  void _increment(double increment) {
     if (increment == 0) {
       return;
     }
@@ -84,7 +67,7 @@ class _NumberPickerState extends State<NumberPicker> {
       _amountController.text = "0";
     }
 
-    num newValue = parseCurrentValue() + increment;
+    double newValue = _parseCurrentValue() + increment;
 
     _setValue(newValue);
   }
@@ -100,13 +83,20 @@ class _NumberPickerState extends State<NumberPicker> {
         color: Colors.black87,
       ),
       onPressed: () {
-        _increment(increment);
+        _increment(increment.toDouble());
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_amountController.text != "") {
+      WidgetsBinding.instance.addPostFrameCallback(
+        // wait for the build to complete so that there is no setState() called during build.
+        (_) => _setValue(_parseCurrentValue()),
+      );
+    }
+
     return CardItem(
       child: Padding(
         padding: const EdgeInsets.all(0.05),
@@ -137,7 +127,7 @@ class _NumberPickerState extends State<NumberPicker> {
                         keyboardType: TextInputType.number,
                         controller: _amountController,
                         onSubmitted: (_) {
-                          _setValue(parseCurrentValue());
+                          _setValue(_parseCurrentValue());
                         },
                         onTap: () {
                           _amountController.text = "";
