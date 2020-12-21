@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'number_picker.dart';
 import 'picker.dart';
@@ -114,7 +115,6 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.all(10),
               color: Color.fromRGBO(54, 69, 79, 1),
               child: Column(
-                //crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "Premium",
@@ -124,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         .copyWith(color: Colors.white),
                   ),
                   Text(
-                    _premium.toString(), // TODO currency format
+                    NumberFormat.simpleCurrency().format(_premium),
                     style: Theme.of(context)
                         .textTheme
                         .headline4
@@ -184,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),
                   NumberPicker(
-                    title: "AD&D Rider", // TODO units format
+                    title: "AD&D Rider",
                     increment: 1,
                     maxValue: 8,
                     onChanged: (double value) {
@@ -194,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),
                   NumberPicker(
-                    title: "Child Unit Rider Units", //TODO units format
+                    title: "Child Unit Rider Units",
                     increment: 1,
                     maxValue: 5,
                     onChanged: (double value) {
