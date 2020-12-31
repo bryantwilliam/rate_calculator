@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'number_picker.dart';
+import 'pac_values.dart';
 import 'picker.dart';
 
 void main() {
@@ -56,6 +57,8 @@ extension PlanTypeExtension on PlanType {
 
 class _MyHomePageState extends State<MyHomePage> {
   String _planType = "";
+  String _genderChar = ""; // M or F
+  String _smoking = "N"; // N or T
   double _coverageAmount = 0;
   int _childRiderUnits = 0;
   int _adNdRiderUnits = 0;
@@ -63,9 +66,81 @@ class _MyHomePageState extends State<MyHomePage> {
   int _age = 0;
 
   double get _premium {
-    double pac = 1; // TODO get pac
-
+    bool isFinal = _planType == PlanType.finalExpense.text;
     bool is20Pay = _planType == PlanType.twentyPay.text;
+    bool isFemale = _genderChar == "F";
+    bool isTob = _smoking == "T";
+
+    double pac = 1; // TODO get pac
+    const int fixedAge = 26;
+    int pacValListIndex = _age - fixedAge;
+    if (isFinal) {
+      if (isFemale) {
+        if (_age < fixedAge) {
+          pac = 1.65;
+        } else /*Greater than fixedAge*/ {
+          if (isTob) {
+            pac = finalFemTob[pacValListIndex];
+          } else /*Non-Tobacco*/ {
+            pac = finalFemNonTob[pacValListIndex];
+          }
+        }
+      } else /*Male*/ {
+        if (_age < fixedAge) {
+          pac = 1.87;
+        } else /*Greater than fixedAge*/ {
+          if (isTob) {
+            pac = finalMaleTob[pacValListIndex];
+          } else /*Non-Tobacco*/ {
+            pac = finalMaleNonTob[pacValListIndex];
+          }
+        }
+      }
+    } else if (is20Pay) {
+      if (isFemale) {
+        if (_age < fixedAge) {
+          pac = 2.55;
+        } else /*Greater than fixedAge*/ {
+          if (isTob) {
+            pac = pay20FemTob[pacValListIndex];
+          } else /*Non-Tobacco*/ {
+            pac = pay20FemNonTob[pacValListIndex];
+          }
+        }
+      } else /*Male*/ {
+        if (_age < fixedAge) {
+          pac = 2.81;
+        } else /*Greater than fixedAge*/ {
+          if (isTob) {
+            pac = pay20MaleTob[pacValListIndex];
+          } else /*Non-Tobacco*/ {
+            pac = pay20MaleNonTob[pacValListIndex];
+          }
+        }
+      }
+    } else /*Modified*/ {
+      if (isFemale) {
+        if (_age < fixedAge) {
+          pac = 2.98;
+        } else /*Greater than fixedAge*/ {
+          if (isTob) {
+            pac = modFemTob[pacValListIndex];
+          } else /*Non-Tobacco*/ {
+            pac = modFemNonTob[pacValListIndex];
+          }
+        }
+      } else /*Male*/ {
+        if (_age < fixedAge) {
+          pac = 3.83;
+        } else /*Greater than fixedAge*/ {
+          if (isTob) {
+            pac = modMaleTob[pacValListIndex];
+          } else /*Non-Tobacco*/ {
+            pac = modMaleNonTob[pacValListIndex];
+          }
+        }
+      }
+    }
 
     double adNdRider;
     if (_age <= 70) {
@@ -82,7 +157,9 @@ class _MyHomePageState extends State<MyHomePage> {
     double childRider =
         (is20Pay ? 2.25 : 2.0) * _childRiderUnits * _numChildren;
 
-    return (pac * (_coverageAmount / 1000)) + adNdRider + childRider + 3;
+    print(
+        "pac: $pac, _coverageAmount: $_coverageAmount, adNdRider: $adNdRider, childRider: $childRider, _age: $_age, pacValListIndex: $pacValListIndex");
+    return (pac * _coverageAmount / 1000) + adNdRider + childRider + 3;
   }
 
   void _clear() {
@@ -142,7 +219,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "Gender",
                     description: "Male or Female?",
                     options: ["Male", "Female"],
-                    onSelected: (String selected) {},
+                    onSelected: (String selected) {
+                      setState(() {
+                        _genderChar = selected == "Male" ? "M" : "F";
+                      });
+                    },
                   ),
                   Picker(
                     title: "Plan Type",
@@ -157,9 +238,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   Picker(
                     title: "Smoking",
                     description: "Smoking?",
-                    options: ["No", "Non-Tobacco", "Tobacco"],
+                    options: ["Non-Tobacco", "Tobacco"],
                     showFirstOptionPlaceholder: true,
-                    onSelected: (String selected) {},
+                    onSelected: (String selected) {
+                      setState(() {
+                        _smoking = selected == "Non-Tobacco" ? "N" : "T";
+                      });
+                    },
                   ),
                   NumberPicker(
                     title: "Age",
