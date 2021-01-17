@@ -232,6 +232,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     onSelected: (String selected) {
                       setState(() {
                         _planType = selected;
+                        if (_planType == PlanType.twentyPay.text && _age > 80) {
+                          _age = 80;
+                        }
                       });
                     },
                   ),
@@ -248,7 +251,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   NumberPicker(
                     title: "Age",
-                    increment: 10,
+                    increment: 1,
                     maxValue: _planType == PlanType.twentyPay.text ? 80 : 85,
                     onChanged: (double value) {
                       setState(() {
