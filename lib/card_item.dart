@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rate_calculator/size_config.dart';
 
 class CardItem extends StatelessWidget {
   final Widget child;
@@ -11,8 +12,8 @@ class CardItem extends StatelessWidget {
       color: Colors.blueGrey,
       elevation: 15,
       margin: EdgeInsets.symmetric(
-        vertical: 2.5,
-        horizontal: 10,
+        vertical: SizeConfig.blockSizeVertical * 0.5,
+        horizontal: SizeConfig.blockSizeHorizontal,
       ),
       child: child,
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:rate_calculator/size_config.dart';
 
 import 'card_item.dart';
 
@@ -76,8 +77,8 @@ class _NumberPickerState extends State<NumberPicker> {
     return FlatButton(
       color: Colors.white70,
       padding: EdgeInsets.all(7),
-      minWidth: 10,
-      height: 10,
+      minWidth: SizeConfig.safeBlockHorizontal * 10,
+      height: SizeConfig.safeBlockVertical * 5,
       child: Icon(
         increment < 0 ? Icons.remove : Icons.add,
         color: Colors.black87,

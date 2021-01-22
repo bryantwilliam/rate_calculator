@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:rate_calculator/size_config.dart';
 
 import 'number_picker.dart';
 import 'pac_values.dart';
@@ -170,6 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return CupertinoPageScaffold(
       resizeToAvoidBottomInset: false, // For overflow from keyboard
       navigationBar: CupertinoNavigationBar(
