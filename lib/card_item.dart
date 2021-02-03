@@ -8,14 +8,17 @@ class CardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.blueGrey,
-      elevation: 15,
-      margin: EdgeInsets.symmetric(
-        vertical: SizeConfig.blockSizeVertical * 0.5,
-        horizontal: SizeConfig.blockSizeHorizontal,
+    return Container(
+      height: SizeConfig.blockSizeVertical * 8.7,
+      child: Card(
+        color: Colors.blueGrey,
+        elevation: 15,
+        margin: EdgeInsets.symmetric(
+          vertical: SizeConfig.blockSizeVertical * 0.5,
+          horizontal: SizeConfig.blockSizeHorizontal,
+        ),
+        child: child,
       ),
-      child: child,
     );
   }
 }
