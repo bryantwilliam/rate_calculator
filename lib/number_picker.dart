@@ -122,7 +122,7 @@ class _NumberPickerState extends State<NumberPicker> {
                       child: TextField(
                         enableInteractiveSelection: false,
                         decoration: InputDecoration.collapsed(
-                          hintText: "Enter Amount",
+                          hintText: "...",
                         ),
                         textAlign: TextAlign.center,
                         keyboardType: TextInputType.number,
@@ -131,7 +131,7 @@ class _NumberPickerState extends State<NumberPicker> {
                           _setValue(_parseCurrentValue());
                         },
                         onTap: () {
-                          _amountController.text = "";
+                          _amountController.clear();
                         },
                       ),
                     ),
