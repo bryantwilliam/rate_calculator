@@ -24,8 +24,19 @@ class NumberPicker extends StatefulWidget {
   _NumberPickerState createState() => _NumberPickerState();
 }
 
+class FixedOffsetTextEditingController extends TextEditingController {
+  @override
+  set text(String newText) {
+    value = value.copyWith(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+      composing: TextRange.empty,
+    );
+  }
+}
+
 class _NumberPickerState extends State<NumberPicker> {
-  final _amountController = TextEditingController();
+  final _amountController = FixedOffsetTextEditingController();
   final _formatCurrency = NumberFormat.simpleCurrency();
 
   void _setValue(double newValue) {
