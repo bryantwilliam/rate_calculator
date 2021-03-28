@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
     bool isFemale = _genderChar == "F";
     bool isTob = _smoking == "T";
 
-    double pac = 1; // TODO get pac
+    double pac = 1;
     const int fixedAge = 26;
     int pacValListIndex = _age - fixedAge;
     if (isFinal) {
